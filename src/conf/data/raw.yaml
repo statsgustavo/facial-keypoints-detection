@@ -1,0 +1,7 @@
+delimiter: ","
+training: 
+  path: data/raw/training
+  file: training.csv
+test:
+  path: ../data/raw/test
+  file: test.csv
