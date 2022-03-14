@@ -5,7 +5,7 @@ description = "Kaggle knowledge competition for facial keypoints identification.
 authors = ["Luis Gustavo Santos Barros"]
 
 [tool.poetry.dependencies]
-python = ">=3.9,<3.11"
+python = ">=3.8,<3.9"
 kaggle = "^1.5.12"
 tensorflow = "^2.8.0"
 opencv-python = "^4.5.5"
