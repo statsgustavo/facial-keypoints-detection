@@ -1,0 +1,7 @@
+data/submissions/examples/
+__pycache__/
+
+.vscode/
+.pytest_cache/
+.hypothesis/
+.ipynb_checkpoints/
