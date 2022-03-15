@@ -1,16 +1,50 @@
 import itertools
-from typing import Tuple
+from cgi import parse_header
+from typing import Any, List, Tuple
 
 import numpy as np
+import pandas as pd
+import toolz as tz
+
+
+def _parse_header(header_line: str, delimiter: str) -> np.ndarray:
+    return np.reshape(
+        np.array(list(map(lambda x: x.strip(), header_line.split(delimiter)))), (-1, 1)
+    )
 
 
 def read_raw_images(path: str, delimiter: str) -> np.ndarray:
     with open(path, "r") as f:
+        header = _parse_header(f.readline(), delimiter)
         for line in itertools.islice(f, 1, None):
-            yield np.array(line.split(delimiter), ndmin=2).T
+            yield np.reshape(np.array(line.split(delimiter)), (-1, 1)), header
 
 
-def separate_key_points_from_image(raw_image: np.ndarray) -> Tuple[np.ndarray]:
-    key_points = raw_image[:30, :]
-    image = np.reshape(np.array(raw_image[-1, 0].split(" ")), newshape=(96, 96))
-    return key_points, image
+def _extract_coordinates_and_image(image: np.ndarray) -> Tuple[np.ndarray]:
+    coordinates = image[:30, :].astype(np.float32)
+    image = np.reshape(
+        np.array(image[-1, 0].split(" "), dtype=np.int32), newshape=(96, 96)
+    )
+    return coordinates, image
+
+
+@tz.curry
+def _filter_coordinates(
+    coordinate: str, values: List[Any], names: List[str]
+) -> Tuple[str, float]:
+    pattern = f"_{coordinate}"
+    return [
+        (z[0].replace(pattern, ""), z[1])
+        for z in zip(names.ravel().tolist(), values.ravel().tolist())
+        if z[0].endswith(pattern)
+    ]
+
+
+def _parse_raw_data(image, header):
+    coordinates, image = _extract_coordinates_and_image(image)
+    fn_parser = _filter_coordinates(values=coordinates, names=header)
+
+    x, y = fn_parser("x"), fn_parser("y")
+    return image, pd.DataFrame(dict(x), index=["x"]).T.join(
+        pd.DataFrame(dict(y), index=["y"]).T
+    )
