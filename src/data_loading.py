@@ -1,5 +1,4 @@
 import itertools
-from cgi import parse_header
 from typing import Any, List, Tuple
 
 import numpy as np
