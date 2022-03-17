@@ -2,9 +2,8 @@ from typing import Tuple
 
 import tensorflow as tf
 import toolz as tz
+from src.tools import resnet_tools
 from tensorflow import keras
-
-from src import resnet_tools
 
 
 def resnet_model(

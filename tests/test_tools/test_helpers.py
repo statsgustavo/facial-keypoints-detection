@@ -1,6 +1,6 @@
 import hypothesis as hp
 from hypothesis import strategies as st
-from src import helpers
+from src.tools import helpers
 
 
 def test_load_metadata():

@@ -4,7 +4,7 @@ from ast import parse
 import numpy as np
 import pandas as pd
 import pytest
-from src import data_loading
+from src.tools import data_loading
 
 
 def test_parse_header(load_params):

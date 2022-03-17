@@ -3,7 +3,7 @@ import os
 import numpy as np
 import pytest
 import tensorflow as tf
-from src import data_loading, helpers
+from src.tools import data_loading, helpers
 
 
 @pytest.fixture(scope="session")

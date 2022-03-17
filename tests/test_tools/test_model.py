@@ -1,6 +1,6 @@
 import pytest
 import tensorflow as tf
-from src import model
+from src.tools import model
 
 
 def test_resnet_model():

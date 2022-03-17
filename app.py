@@ -5,8 +5,8 @@ import PIL
 import streamlit as st
 from matplotlib import pyplot as plt
 
-from src import data_loading as dl
-from src import helpers, visualization
+from src.tools import data_loading as dl
+from src.tools import helpers, visualization
 
 
 @st.cache(hash_funcs={types.GeneratorType: id})

@@ -1,5 +1,5 @@
 import pytest
-from src import helpers, resnet_tools
+from src.tools import helpers, resnet_tools
 
 
 def test_one_convolution_block(input_tensor):
