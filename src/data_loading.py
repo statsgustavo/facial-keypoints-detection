@@ -1,5 +1,5 @@
 import itertools
-from typing import Any, List, Tuple
+from typing import Any, Dict, List, Tuple
 
 import numpy as np
 import pandas as pd
@@ -30,7 +30,7 @@ def _extract_coordinates_and_image(image: np.ndarray) -> Tuple[np.ndarray]:
 @tz.curry
 def _filter_coordinates(
     coordinate: str, values: List[Any], names: List[str]
-) -> List[Tuple[str, float]]:
+) -> Dict[str, float]:
     pattern = f"_{coordinate}"
     return dict(
         [
