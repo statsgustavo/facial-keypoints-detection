@@ -46,9 +46,11 @@ def test_filter_coordinates_full_call(one_image):
         "y", coordinates[:30, :], feature_names[:30, :]
     )
 
-    assert isinstance(xs, list) and isinstance(ys, list)
-    assert all(map(lambda x: isinstance(x, tuple), xs)) and all(
-        map(lambda x: isinstance(x, tuple), ys)
+    assert isinstance(xs, dict) and isinstance(ys, dict)
+    assert all(
+        map(lambda x: isinstance(x[0], str) and isinstance(x[1], float), xs.items())
+    ) and all(
+        map(lambda y: isinstance(y[0], str) and isinstance(y[1], float), ys.items())
     )
 
 
