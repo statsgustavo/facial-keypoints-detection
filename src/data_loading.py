@@ -30,20 +30,23 @@ def _extract_coordinates_and_image(image: np.ndarray) -> Tuple[np.ndarray]:
 @tz.curry
 def _filter_coordinates(
     coordinate: str, values: List[Any], names: List[str]
-) -> Tuple[str, float]:
+) -> List[Tuple[str, float]]:
     pattern = f"_{coordinate}"
-    return [
-        (z[0].replace(pattern, ""), z[1])
-        for z in zip(names.ravel().tolist(), values.ravel().tolist())
-        if z[0].endswith(pattern)
-    ]
-
-
-def _parse_raw_data(image, header):
-    coordinates, image = _extract_coordinates_and_image(image)
-    fn_parser = _filter_coordinates(values=coordinates, names=header)
-
-    x, y = fn_parser("x"), fn_parser("y")
-    return image, pd.DataFrame(dict(x), index=["x"]).T.join(
-        pd.DataFrame(dict(y), index=["y"]).T
+    return dict(
+        [
+            (z[0].replace(pattern, ""), z[1])
+            for z in zip(names.ravel().tolist(), values.ravel().tolist())
+            if z[0].endswith(pattern)
+        ]
     )
+
+
+def _parse_raw_data(image: np.ndarray, header: np.ndarray) -> pd.DataFrame:
+    coordinates, image = _extract_coordinates_and_image(image)
+    fn_filter = _filter_coordinates(values=coordinates, names=header)
+
+    x, y = fn_filter("x"), fn_filter("y")
+    features_coordinates_table = pd.DataFrame(x, index=["x"]).T.join(
+        pd.DataFrame(y, index=["y"]).T
+    )
+    return image, features_coordinates_table
