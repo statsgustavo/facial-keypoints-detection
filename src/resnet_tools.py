@@ -76,6 +76,7 @@ def projection_shortcut(
     X: tf.Tensor,
     num_filters: Tuple[int],
     filter_size: Union[int, Tuple[int]],
+    strides: Union[int, Tuple[int]],
     activation: str = "relu",
     training: bool = True,
 ) -> tf.Tensor:
@@ -91,6 +92,9 @@ def projection_shortcut(
     :param filter_size: An interger or a tuple of 2 integers specifying the height and
     width of the middle convolution filter used in the block.
 
+    :param strides: An interger or a tuple of 2 integers specifying the strides of the
+    convolutions along height and width.
+
     :param activation: A string defining the activation to be used when required.
 
     :param training: A boolean used to lock parameters when not training the model in
@@ -103,7 +107,7 @@ def projection_shortcut(
         _one_convolution_block(
             num_filters=filters_3,
             filter_size=(1, 1),
-            strides=(2, 2),
+            strides=strides,
             padding="valid",
             activation=activation,
             training=training,
@@ -129,7 +133,7 @@ def projection_shortcut(
     fn_shortcut_projection = _one_convolution_block(
         num_filters=filters_3,
         filter_size=(1, 1),
-        strides=(2, 2),
+        strides=strides,
         padding="valid",
         activation=activation,
         training=training,

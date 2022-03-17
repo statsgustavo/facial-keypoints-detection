@@ -16,7 +16,7 @@ def test_one_convolution_block(input_tensor):
 
 def test_projection_shortcut_full_call(input_tensor):
     output_tensor = resnet_tools.projection_shortcut(
-        X=input_tensor, num_filters=(5, 5, 5), filter_size=(3, 3)
+        X=input_tensor, num_filters=(5, 5, 5), filter_size=(3, 3), strides=(2, 2)
     )
 
     assert (1, 14, 14, 5) == tuple(output_tensor.shape)
@@ -24,7 +24,7 @@ def test_projection_shortcut_full_call(input_tensor):
 
 def test_projection_shortcut_full_partial(input_tensor):
     fn_projection = resnet_tools.projection_shortcut(
-        num_filters=(5, 5, 5), filter_size=(3, 3)
+        num_filters=(5, 5, 5), filter_size=(3, 3), strides=(2, 2)
     )
     assert callable(fn_projection)
 
