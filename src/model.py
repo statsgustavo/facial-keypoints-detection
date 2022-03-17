@@ -4,7 +4,7 @@ import tensorflow as tf
 import toolz as tz
 from tensorflow import keras
 
-from src.tools import resnet_tools
+from src import resnet_tools
 
 
 def resnet_model(
