@@ -75,8 +75,8 @@ def _one_convolution_block(
 def projection_shortcut(
     X: tf.Tensor,
     num_filters: Tuple[int],
-    filter_size: Union[int, Tuple[int]],
-    strides: Union[int, Tuple[int]],
+    filter_size: Union[int, Tuple[int]] = (3, 3),
+    strides: Union[int, Tuple[int]] = 2,
     activation: str = "relu",
     training: bool = True,
 ) -> tf.Tensor:
@@ -150,7 +150,7 @@ def projection_shortcut(
 def identity_mapping(
     X: tf.Tensor,
     num_filters: Tuple[int],
-    filter_size: Union[int, Tuple[int]],
+    filter_size: Union[int, Tuple[int]] = (3, 3),
     activation: str = "relu",
     training: bool = True,
 ) -> tf.Tensor:
