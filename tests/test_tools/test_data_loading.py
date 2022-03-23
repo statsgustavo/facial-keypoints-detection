@@ -1,5 +1,4 @@
 import os
-from ast import parse
 
 import numpy as np
 import pandas as pd
@@ -62,7 +61,7 @@ def test_filter_coordinates_partial_call(one_image):
     assert callable(fn)
 
 
-def test_parse_x_and_y_coordinates(one_image):
+def test_parse_raw_data(one_image):
     raw_image, header = one_image
     image, parsed_coordinates = data_loading._parse_raw_data(raw_image, header)
 
