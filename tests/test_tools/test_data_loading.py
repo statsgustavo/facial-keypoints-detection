@@ -61,30 +61,25 @@ def test_filter_coordinates_partial_call(one_image):
     assert callable(fn)
 
 
-def test_parse_raw_data(one_image):
+def test_parse_raw_data(one_image, parsed_feature_names):
     raw_image, header = one_image
-    image, parsed_coordinates = data_loading._parse_raw_data(raw_image, header)
+    image, x, y = data_loading._parse_raw_data(raw_image, header)
 
     assert isinstance(image, np.ndarray)
     assert image.shape == (96, 96)
     assert image.dtype == np.int32
+    assert isinstance(x, dict) and isinstance(y, dict)
+    assert list(x.keys()) == parsed_feature_names
+    assert list(x.keys()) == list(y.keys())
+
+
+def test_convert_features_coordinates_to_dataframe(one_image, parsed_feature_names):
+    raw_image, header = one_image
+    parsed_coordinates = data_loading._convert_features_coordinates_to_dataframe(
+        *data_loading._parse_raw_data(raw_image, header)[1:]
+    )
+
     assert isinstance(parsed_coordinates, pd.DataFrame)
     assert parsed_coordinates.shape == (15, 2)
     assert parsed_coordinates.columns.tolist() == ["x", "y"]
-    assert parsed_coordinates.index.tolist() == [
-        "left_eye_center",
-        "right_eye_center",
-        "left_eye_inner_corner",
-        "left_eye_outer_corner",
-        "right_eye_inner_corner",
-        "right_eye_outer_corner",
-        "left_eyebrow_inner_end",
-        "left_eyebrow_outer_end",
-        "right_eyebrow_inner_end",
-        "right_eyebrow_outer_end",
-        "nose_tip",
-        "mouth_left_corner",
-        "mouth_right_corner",
-        "mouth_center_top_lip",
-        "mouth_center_bottom_lip",
-    ]
+    assert parsed_coordinates.index.tolist() == parsed_feature_names
