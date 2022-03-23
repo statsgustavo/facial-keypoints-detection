@@ -1,9 +1,13 @@
 import itertools
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, NewType, Tuple
 
 import numpy as np
 import pandas as pd
 import toolz as tz
+
+ParsedRawData = NewType(
+    "ParsedRawData", Tuple[np.ndarray, Dict[str, float], Dict[str, float]]
+)
 
 
 def _parse_header(header_line: str, delimiter: str) -> np.ndarray:
@@ -41,12 +45,18 @@ def _filter_coordinates(
     )
 
 
-def _parse_raw_data(image: np.ndarray, header: np.ndarray) -> pd.DataFrame:
+def _parse_raw_data(image: np.ndarray, header: np.ndarray) -> ParsedRawData:
     coordinates, image = _extract_coordinates_and_image(image)
     fn_filter = _filter_coordinates(values=coordinates, names=header)
 
     x, y = fn_filter("x"), fn_filter("y")
-    features_coordinates_table = pd.DataFrame(x, index=["x"]).T.join(
-        pd.DataFrame(y, index=["y"]).T
+
+    return image, x, y
+
+
+def _convert_features_coordinates_to_dataframe(
+    x_coodinates: dict, y_coordinates: dict
+) -> pd.DataFrame:
+    return pd.DataFrame(x_coodinates, index=["x"]).T.join(
+        pd.DataFrame(y_coordinates, index=["y"]).T
     )
-    return image, features_coordinates_table
