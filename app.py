@@ -25,10 +25,13 @@ def main():
     container_left_column, container_right_column = image_contrainer.columns(2)
 
     if next_image_button_clicked:
-        image, feature_coordinates = dl._parse_raw_data(*next(images))
+        image, x_coords, y_coords = dl._parse_raw_data(*next(images))
+        df_feature_coordinates = dl._convert_features_coordinates_to_dataframe(
+            x_coords, y_coords
+        )
         fig_raw, _ = visualization.plot_image(image)
         fig_with_keypoints, _ = visualization.plot_key_points(
-            image, feature_coordinates
+            image, df_feature_coordinates
         )
 
         container_left_column.subheader("Raw image")
