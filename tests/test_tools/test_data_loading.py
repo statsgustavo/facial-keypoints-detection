@@ -1,12 +1,9 @@
-import os
-
 import numpy as np
 import pandas as pd
-import pytest
 from src.tools import data_loading
 
 
-def test_parse_header(load_params):
+def test_parse_header():
     header = data_loading._parse_header(
         "column_a, column_b, column_c, something_d", ","
     )
