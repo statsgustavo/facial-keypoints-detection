@@ -25,6 +25,27 @@ def one_image(load_params):
 
 
 @pytest.fixture(scope="session")
+def parsed_feature_names():
+    return [
+        "left_eye_center",
+        "right_eye_center",
+        "left_eye_inner_corner",
+        "left_eye_outer_corner",
+        "right_eye_inner_corner",
+        "right_eye_outer_corner",
+        "left_eyebrow_inner_end",
+        "left_eyebrow_outer_end",
+        "right_eyebrow_inner_end",
+        "right_eyebrow_outer_end",
+        "nose_tip",
+        "mouth_left_corner",
+        "mouth_right_corner",
+        "mouth_center_top_lip",
+        "mouth_center_bottom_lip",
+    ]
+
+
+@pytest.fixture(scope="session")
 def input_tensor():
     return tf.random.normal(
         (1, 28, 28, 3), seed=42
