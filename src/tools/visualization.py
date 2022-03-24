@@ -1,6 +1,5 @@
 import toolz as tz
 from matplotlib import pyplot as plt
-from src.tools import data, helpers
 
 
 def plot_image(image, figure_kws=None):
