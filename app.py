@@ -5,7 +5,7 @@ import PIL
 import streamlit as st
 from matplotlib import pyplot as plt
 
-from src.tools import data_loading as dl
+from src.tools import data as dl
 from src.tools import helpers, visualization
 
 
