@@ -1,6 +1,8 @@
-from typing import Any, Dict, List, Tuple
+import gc
+from typing import Any, Callable, Dict, List, Tuple
 
 import hydra
+import joblib as jl
 import numpy as np
 import omegaconf
 
@@ -14,6 +16,21 @@ def load_metadata(folders: List[str], files: List[str]) -> Dict[str, Any]:
     return omegaconf.OmegaConf.to_object(metadata)
 
 
+def run_in_parallel(
+    function: Callable[[Any], Any],
+    values: List[Any],
+    backend: str = "loky",
+    n_jobs: int = 4,
+    verbose: int = 2,
+) -> List[Any]:
+    results = jl.Parallel(n_jobs=n_jobs, backend=backend, verbose=verbose)(
+        jl.delayed(function)(x) for x in values
+    )
+
+    gc.collect()
+    return results
+
+
 def _compute_one_dimension_size(
     input_dim_size: int, filter_dim_size: int, stride: int, padding: int
 ) -> int:
@@ -22,7 +39,7 @@ def _compute_one_dimension_size(
     ).astype(np.int32)
 
 
-def _same_convolution_padding(filter_shape):
+def _same_convolution_padding(filter_shape: Tuple[int, int]) -> Tuple[int, int]:
     filter_height, filter_width = filter_shape
     same_padding_height, same_padding_width = (
         (filter_height - 1) / 2,
@@ -32,12 +49,12 @@ def _same_convolution_padding(filter_shape):
 
 
 def convolution_output_dimension(
-    input_shape: Tuple[int],
-    filter_shape: Tuple[int],
-    stride: Tuple[int],
-    padding: Tuple[int],
+    input_shape: Tuple[int, int],
+    filter_shape: Tuple[int, int],
+    stride: Tuple[int, int],
+    padding: Tuple[int, int],
     num_filters: int,
-) -> Tuple[int]:
+) -> Tuple[int, int, int]:
     input_height, input_width = input_shape
     filter_height, filter_width = filter_shape
     stride_height, stride_width = stride
