@@ -1,5 +1,5 @@
 import re
-from typing import Optional, Tuple
+from typing import Any, Callable, List, Optional, Tuple
 
 import numpy as np
 import pandas as pd
@@ -9,6 +9,7 @@ from src.facial_keypoints_detection.types import (
     ArrayType,
     DataframeType,
     DatasetType,
+    FnDataframeWriter,
     FnImageConverterType,
     FnKwargs,
     RawDataReader,
@@ -18,6 +19,7 @@ from . import helpers
 
 
 @tz.curry
+@helpers.log_execution_start
 def read_dataset_file(
     file_path: str, reader_kws: Optional[FnKwargs] = None
 ) -> ArrayType:
@@ -28,11 +30,51 @@ def read_dataset_file(
 
 
 @tz.curry
+@helpers.log_execution_start
+def save_dataset(
+    dataframe: DataframeType, file_path: str, writer_kws: Optional[FnKwargs] = None
+) -> DataframeType:
+    if writer_kws is None:
+        writer_kws = dict(index=False)
+
+    dataframe.to_csv(file_path, **writer_kws)
+    return dataframe
+
+
+@tz.curry
+@helpers.log_execution_start
+def save_multiple_datasets(
+    datasets: Tuple[DatasetType],
+    file_paths: Tuple[str, ...],
+    fn_save: FnDataframeWriter,
+) -> Tuple[DatasetType]:
+    if len(datasets) != len(file_paths):
+        raise ValueError("`datasets` and `file_paths` lenghts must match.")
+
+    for dataset, path in zip(datasets, file_paths):
+        _ = fn_save(dataset, file_path=path)
+
+    return datasets
+
+
+@tz.curry
 def to_image(image_str: str, delimiter: Optional[str] = None) -> ArrayType:
     """Converts image in string format to numpy.ndarrayType."""
     if delimiter is None:
         delimiter = " "
-    return np.array(image_str.split(delimiter), dtype=np.int32).reshape((96, 96))
+
+    image = (
+        (np.fromstring(image_str, dtype=np.int32, sep=delimiter) / 255.0)
+        .astype(np.float32)
+        .reshape((96, 96))
+    )
+
+    return image
+
+
+@tz.curry
+def fill_null_values(dataframe: DataframeType, fill_value: Any) -> DataframeType:
+    return dataframe.fillna(fill_value)
 
 
 @tz.curry
@@ -91,6 +133,8 @@ def _separate_images_and_coordinates(
     return images, coordinates
 
 
+@tz.curry
+@helpers.log_execution_start
 def create_tensorflow_dataset(
     path: DataframeType,
     fn_dataset_reader: RawDataReader,
@@ -115,3 +159,42 @@ def create_tensorflow_dataset(
     tf_dataset = tf_dataset.batch(batch_size)
     tf_dataset = tf_dataset.prefetch(batch_size)
     return tf_dataset
+
+
+@tz.curry
+def _sample_dataset(
+    dataframe: DataframeType,
+    sampling_proportion: float,
+    seed: int,
+    replace: bool = False,
+) -> DataframeType:
+    return dataframe.sample(
+        frac=sampling_proportion, random_state=seed, replace=replace
+    )
+
+
+@tz.curry
+@helpers.log_execution_start
+def training_and_validation_split(
+    dataframe: DataframeType,
+    validation_proportion: float,
+    seed: int,
+    replace: bool = False,
+) -> Tuple[DataframeType]:
+    """
+    Splits raw training dataset into training and validation files.
+    """
+
+    validation = tz.pipe(
+        dataframe,
+        _sample_dataset(
+            sampling_proportion=validation_proportion, seed=seed, replace=replace
+        ),
+    )
+
+    training = tz.pipe(
+        dataframe,
+        lambda d: d.drop(validation.index, axis=0),
+    )
+
+    return training, validation
