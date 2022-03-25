@@ -1,15 +1,7 @@
-import os
-
 import numpy as np
 import pandas as pd
 import pytest
 import tensorflow as tf
-from src.tools import data, helpers
-
-
-@pytest.fixture(scope="session")
-def metadata():
-    return helpers.load_metadata(["data"], ["raw"])["data"]
 
 
 @pytest.fixture(scope="session")
