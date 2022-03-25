@@ -1,0 +1,11 @@
+delimiter: ","
+prop_validation: 0.2
+training: 
+  path: data/interim/training
+  file: training.csv
+validation: 
+  path: data/interim/validation
+  file: validation.csv
+test:
+  path: data/interim/test
+  file: test.csv
