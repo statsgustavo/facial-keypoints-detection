@@ -1,4 +1,4 @@
-from typing import Any, Callable, Dict, List, NewType, Optional, Tuple, Type, Union
+from typing import Any, Callable, Dict, List, NewType, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -28,4 +28,9 @@ FnImageConverterType = Callable[
 
 FnDataframeTransformerType = Callable[
     [DataframeType, Optional[Union[FnArgs, FnKwargs]]], DataframeType
+]
+
+
+FnTensorTransformerType = Callable[
+    [TensorType, Optional[Union[FnArgs, FnKwargs]]], TensorType
 ]
