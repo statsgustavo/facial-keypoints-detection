@@ -13,12 +13,12 @@ def training():
         model_params["batch_size"]
     )
 
-    model = resnet.model(input_shape=(96, 96, 3), output_shape=(30, 1))
+    model = resnet.model(input_shape=(96, 96, 1), output_shape=(30, 1))
 
     model.compile(
         optimizer=tf.keras.optimizers.Adam(learning_rate=model_params["learning_rate"]),
-        loss=tf.keras.losses.MeanSquaredLoss(),
-        metrics=[tf.keras.RootMeanSquaredError()],
+        loss=tf.keras.losses.MeanSquaredError(),
+        metrics=[tf.keras.metrics.RootMeanSquaredError()],
     )
 
     model.fit(
@@ -29,7 +29,7 @@ def training():
 
 
 def cli():
-    fire.Fire({"train_model": training})
+    fire.Fire({"training": training})
 
 
 if __name__ == "__main__":
