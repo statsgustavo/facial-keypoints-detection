@@ -1,5 +1,8 @@
+import functools
 import gc
-from typing import Any, Callable, Dict, List, Tuple
+import multiprocessing as mp
+import os
+from typing import Any, Callable, Dict, List, NoReturn, Tuple
 
 import hydra
 import joblib as jl
@@ -7,15 +10,46 @@ import numpy as np
 import omegaconf
 
 
+def make_path(dataset_params: Dict[str, str]) -> str:
+    if not ("path" in dataset_params or "file" in dataset_params):
+        raise KeyError("`dataset_params` does not contain the information necessary.")
+
+    return os.path.join(dataset_params["path"], dataset_params["file"])
+
+
 def load_metadata(folders: List[str], files: List[str]) -> Dict[str, Any]:
     overides_ = [f"+{a}={b}" for a, b in zip(folders, files)]
 
-    with hydra.initialize_config_module(
-        config_module="src.facial_keypoints_detection.conf"
-    ):
+    with hydra.initialize_config_module(config_module="conf"):
         metadata = hydra.compose(overrides=overides_)
 
     return omegaconf.OmegaConf.to_object(metadata)
+
+
+def load_dataset_params(dataset: str):
+    return load_metadata(["data"], [dataset])["data"]
+
+
+def execute_in_multplipe_processes(
+    functions: List[Callable[[Any], Any]], fn_args: List[Tuple[Any]]
+) -> NoReturn:
+
+    spawned_processes = []
+
+    if fn_args is None:
+        args = [tuple()] * len(functions)
+    else:
+        if len(functions) != len(fn_args):
+            raise ValueError(
+                "List of arguments and list of functions have unmatching lengths."
+            )
+
+    for fn, args in zip(functions, fn_args):
+        process = mp.Process(target=fn, args=args)
+        process.start()
+        spawned_processes.append(process)
+
+    _ = map(lambda p: p.join(), spawned_processes)
 
 
 def run_in_parallel(
@@ -31,6 +65,15 @@ def run_in_parallel(
 
     gc.collect()
     return results
+
+
+def log_execution_start(fn):
+    @functools.wraps(fn)
+    def wrapper(*args, **kwargs):
+        print(f"Started execution of `{fn.__name__}`")
+        return fn(*args, **kwargs)
+
+    return wrapper
 
 
 def _compute_one_dimension_size(

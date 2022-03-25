@@ -12,6 +12,18 @@ def test_load_metadata():
     assert "delimiter" in metadata["data"]
 
 
+def test_log_execution_start(capsys):
+    @helpers.log_execution_start
+    def foo(a, b, c):
+        """This is foo docstring."""
+        return a * b / c
+
+    result = foo(2, 6, 3)
+    out, err = capsys.readouterr()
+    assert out == "Started execution of `foo`\n"
+    assert foo.__doc__ == "This is foo docstring."
+
+
 def test_convolution_output_dimension():
     assert (4, 4, 5) == helpers.convolution_output_dimension(
         (6, 6), (3, 3), (1, 1), (0, 0), 5
