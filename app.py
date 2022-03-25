@@ -5,10 +5,8 @@ from typing import Tuple
 import pandas as pd
 import streamlit as st
 import toolz as tz
-from matplotlib import pyplot as plt
 
-from facial_keypoints_detection.src.tools import data, helpers, visualization
-from facial_keypoints_detection.src.types.types import TensorType
+from src.facial_keypoints_detection.tools import data, helpers, visualization
 
 
 @st.cache(hash_funcs={tz.functoolz.curry: id, types.GeneratorType: id})
