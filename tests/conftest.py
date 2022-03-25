@@ -65,19 +65,44 @@ def features_names():
 @pytest.fixture(scope="session")
 def dataset(columns_names):
     nrows = 10
-    features = np.random.uniform(0, 96, (nrows, 30)).tolist()
+    num_nans = 5
+    x_nans, y_nans = (
+        np.random.randint(0, nrows, num_nans),
+        np.random.randint(0, 30, num_nans),
+    )
+
+    features = np.random.uniform(0, 96, (nrows, 30))
+    features[x_nans, y_nans] = np.nan
+    features = features.tolist()
+
     images = np.random.randint(0, 256, (nrows, 96 * 96)).astype(str).tolist()
 
-    return pd.DataFrame(
+    dataset = pd.DataFrame(
         [[*feat, " ".join(img)] for feat, img in zip(features, images)],
         columns=columns_names,
     )
+
+    return dataset
 
 
 @pytest.fixture(scope="session")
 def dataset_csv_file(tmpdir_factory, dataset):
     fixture_filename = str(tmpdir_factory.mktemp("data").join("dataset.csv"))
     dataset.to_csv(fixture_filename, index=False)
+    return fixture_filename
+
+
+@pytest.fixture(scope="function")
+def dataset_save_path(tmpdir_factory):
+    fixture_filename = str(tmpdir_factory.mktemp("data").join("saved_dataset.csv"))
+    return fixture_filename
+
+
+@pytest.fixture(scope="function")
+def extra_dataset_save_path(tmpdir_factory):
+    fixture_filename = str(
+        tmpdir_factory.mktemp("data").join("another_saved_dataset.csv")
+    )
     return fixture_filename
 
 
