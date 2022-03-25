@@ -1,23 +1,36 @@
 import os
 import types
+from typing import Tuple
 
-import PIL
+import pandas as pd
 import streamlit as st
+import toolz as tz
 from matplotlib import pyplot as plt
 
-from src.tools import data as dl
-from src.tools import helpers, visualization
+from src.tools import data, helpers, visualization
+from src.types.types import TensorType
 
 
-@st.cache(hash_funcs={types.GeneratorType: id})
+@st.cache(hash_funcs={tz.functoolz.curry: id, types.GeneratorType: id})
 def load_data():
     metadata = helpers.load_metadata(["data"], ["raw"])["data"]
     path = os.path.join(metadata["training"]["path"], metadata["training"]["file"])
-    return dl.read_raw_images(path, metadata["delimiter"])
+
+    return data.read_dataset_file(path).iterrows()
+
+
+def _parse_output(output: Tuple[int, pd.Series]) -> pd.DataFrame:
+    return pd.DataFrame(output[1]).T
+
+
+def _generate_figures(image, coordinates):
+    raw, _ = visualization.plot_image(image)
+    with_keypoints, _ = visualization.plot_key_points(image, coordinates)
+    return raw, with_keypoints
 
 
 def main():
-    images = load_data()
+    dataset = load_data()
 
     st.title("Facial Keypoints Detection")
     next_image_button_clicked = st.button("Next image")
@@ -25,14 +38,12 @@ def main():
     container_left_column, container_right_column = image_contrainer.columns(2)
 
     if next_image_button_clicked:
-        image, x_coords, y_coords = dl._parse_raw_data(*next(images))
-        df_feature_coordinates = dl._convert_features_coordinates_to_dataframe(
-            x_coords, y_coords
-        )
-        fig_raw, _ = visualization.plot_image(image)
-        fig_with_keypoints, _ = visualization.plot_key_points(
-            image, df_feature_coordinates
-        )
+        dataset_row = _parse_output(next(dataset))
+
+        table = data.coordinates_table(dataset_row)
+        image = data.to_image(dataset_row.Image.values[0])
+
+        fig_raw, fig_with_keypoints = _generate_figures(image, table)
 
         container_left_column.subheader("Raw image")
         container_left_column.pyplot(fig_raw)
