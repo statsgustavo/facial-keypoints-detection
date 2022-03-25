@@ -3,6 +3,9 @@ name = "facial-keypoints-detection"
 version = "0.1.0"
 description = "Kaggle knowledge competition for facial keypoints identification."
 authors = ["Luis Gustavo Santos Barros"]
+packages = [
+    { include = "src" }
+]
 
 [tool.poetry.dependencies]
 python = ">=3.8,<3.9"

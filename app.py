@@ -7,8 +7,8 @@ import streamlit as st
 import toolz as tz
 from matplotlib import pyplot as plt
 
-from src.tools import data, helpers, visualization
-from src.types.types import TensorType
+from facial_keypoints_detection.src.tools import data, helpers, visualization
+from facial_keypoints_detection.src.types.types import TensorType
 
 
 @st.cache(hash_funcs={tz.functoolz.curry: id, types.GeneratorType: id})

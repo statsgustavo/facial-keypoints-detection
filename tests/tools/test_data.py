@@ -1,8 +1,7 @@
 import numpy as np
 import pandas as pd
-import pytest
-from src.tools import data
-from src.types.types import DatasetType
+import tensorflow as tf
+from src.facial_keypoints_detection.tools import data
 
 
 def test_read_dataset_file(dataset_csv_file):
@@ -60,7 +59,7 @@ def test_create_tensorflow_dataset(dataset_csv_file):
     tf_dataset = data.create_tensorflow_dataset(
         dataset_csv_file, data.read_dataset_file, 3
     )
-    assert isinstance(tf_dataset, DatasetType)
+    assert isinstance(tf_dataset, tf.data.Dataset)
 
     [(images, coordinates)] = tf_dataset.take(1)
 

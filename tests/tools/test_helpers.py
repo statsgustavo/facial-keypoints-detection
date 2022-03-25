@@ -1,6 +1,6 @@
 import hypothesis as hp
 from hypothesis import strategies as st
-from src.tools import helpers
+from src.facial_keypoints_detection.tools import helpers
 
 
 def test_load_metadata():

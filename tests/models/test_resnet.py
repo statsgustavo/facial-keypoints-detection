@@ -1,7 +1,6 @@
 import pytest
 import tensorflow as tf
-from src.models import resnet
-from src.tools import helpers
+from src.facial_keypoints_detection.models import resnet
 
 
 def test_one_convolution_block(input_tensor):

@@ -3,6 +3,7 @@ from typing import Any, Callable, Tuple, Union
 
 import tensorflow as tf
 import toolz as tz
+from src.facial_keypoints_detection.types import FnTensorTransformerType, TensorType
 from tensorflow import keras
 
 
@@ -14,7 +15,7 @@ def _one_convolution_block(
     activation: str = None,
     training: bool = True,
     fn_initializer: Callable[[Any], Any] = keras.initializers.glorot_uniform,
-) -> Callable[[tf.Tensor], tf.Tensor]:
+) -> FnTensorTransformerType:
     """
     One convolution sub-component of the ResNet building blocks. Architecture consists
     of:
@@ -46,7 +47,7 @@ def _one_convolution_block(
     :param training: A boolean used to lock parameters when not training the model in
     some of its layers.
 
-    fn_initializer: Initializer for the kernel weights matrix (see keras.initializers).
+    :param fn_initializer: Initializer for the kernel weights matrix (see keras.initializers).
     Defaults to 'random_uniform'.
 
     """
@@ -79,7 +80,7 @@ def projection_shortcut(
     strides: Union[int, Tuple[int]] = 2,
     activation: str = "relu",
     training: bool = True,
-) -> tf.Tensor:
+) -> TensorType:
     """
     Residual network block which performs projection of the input a desired dimension in
     order to match output from the residual block when dimmension varies across blocks.
@@ -148,12 +149,12 @@ def projection_shortcut(
 
 @tz.curry
 def identity_mapping(
-    X: tf.Tensor,
+    X: TensorType,
     num_filters: Tuple[int],
     filter_size: Union[int, Tuple[int]] = (3, 3),
     activation: str = "relu",
     training: bool = True,
-) -> tf.Tensor:
+) -> TensorType:
     """
     Residual network block.
 

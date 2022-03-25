@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from src.tools import data, visualization
+from src.facial_keypoints_detection.tools import data, visualization
 
 
 def test_plot_image_custom_figsize(dataset):
