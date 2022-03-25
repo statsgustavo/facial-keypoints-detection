@@ -21,6 +21,8 @@ FnKwargs = NewType("FnKwargs", Dict[str, Any])
 # Reader types
 RawDataReader = Callable[[str, Optional[FnKwargs]], DataframeType]
 
+FnDataframeWriter = Callable[[DataframeType, str, Optional[FnKwargs]], DataframeType]
+
 # TransformerTypes
 FnImageConverterType = Callable[
     [ArrayType, Optional[Union[FnArgs, FnKwargs]]], ArrayType
