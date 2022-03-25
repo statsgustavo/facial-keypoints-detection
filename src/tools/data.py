@@ -84,8 +84,13 @@ def _separate_images_and_coordinates(
 
 
 def create_tensorflow_dataset(
-    dataframe: DataframeType, batch_size: int, shuffle: Optional[bool] = True
+    path: DataframeType,
+    fn_dataset_reader: RawDataReader,
+    batch_size: int,
+    shuffle: Optional[bool] = True,
 ) -> DatasetType:
+
+    dataframe = fn_dataset_reader(path)
 
     images, coordinates = _separate_images_and_coordinates(
         dataframe, to_image(delimiter=" ")

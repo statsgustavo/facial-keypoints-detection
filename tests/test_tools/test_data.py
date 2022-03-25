@@ -56,8 +56,10 @@ def test_separate_images_and_coordinates(dataset):
     assert images.shape == (10, 96, 96)
 
 
-def test_create_tensorflow_dataset(dataset):
-    tf_dataset = data.create_tensorflow_dataset(dataset, 3)
+def test_create_tensorflow_dataset(dataset_csv_file):
+    tf_dataset = data.create_tensorflow_dataset(
+        dataset_csv_file, data.read_dataset_file, 3
+    )
     assert isinstance(tf_dataset, DatasetType)
 
     [(images, coordinates)] = tf_dataset.take(1)
