@@ -208,3 +208,46 @@ def identity_mapping(
         keras.layers.Add(),
         keras.layers.Activation(activation),
     )
+
+
+def model(
+    input_shape: Tuple[int] = (96, 96, 3), output_shape: Tuple[int] = (30, 1)
+) -> keras.Model:
+    X_input = keras.layers.Input(input_shape)
+
+    fn_model = tz.compose_left(
+        keras.layers.ZeroPadding2D((3, 3)),
+        _one_convolution_block(64, (7, 7), (2, 2), "valid", "relu"),
+        keras.layers.MaxPool2D((3, 3), (2, 2)),
+        projection_shortcut(num_filters=(64, 64, 64)),
+        identity_mapping(num_filters=(64, 64, 64)),
+        identity_mapping(num_filters=(64, 64, 64)),
+        identity_mapping(num_filters=(64, 64, 64)),
+        identity_mapping(num_filters=(64, 64, 64)),
+        identity_mapping(num_filters=(64, 64, 64)),
+        projection_shortcut(num_filters=(128, 128, 128)),
+        identity_mapping(num_filters=(128, 128, 128)),
+        identity_mapping(num_filters=(128, 128, 128)),
+        identity_mapping(num_filters=(128, 128, 128)),
+        identity_mapping(num_filters=(128, 128, 128)),
+        identity_mapping(num_filters=(128, 128, 128)),
+        identity_mapping(num_filters=(128, 128, 128)),
+        identity_mapping(num_filters=(128, 128, 128)),
+        projection_shortcut(num_filters=(512, 512, 512)),
+        identity_mapping(num_filters=(512, 512, 512)),
+        identity_mapping(num_filters=(512, 512, 512)),
+        identity_mapping(num_filters=(512, 512, 512)),
+        identity_mapping(num_filters=(512, 512, 512)),
+        identity_mapping(num_filters=(512, 512, 512)),
+        keras.layers.AveragePooling2D((2, 2)),
+        keras.layers.Flatten(),
+        keras.layers.Dense(
+            output_shape[0],
+            activation="linear",
+            kernel_initializer=keras.initializers.glorot_uniform(seed=42),
+        ),
+    )
+
+    output = fn_model(X_input)
+
+    return keras.Model(inputs=X_input, outputs=output, name="ResNet34")
